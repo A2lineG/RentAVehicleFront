@@ -1,6 +1,27 @@
-
+<!-- 
 <ul>
-  <li *ngFor="let item of brandList">
+  <li *ngFor="let item of brandList ">
     {{ item.name }}
   </li>
-</ul>
+</ul> -->
+
+<p-table [value]="brandList">
+  <ng-template pTemplate="header">
+      <tr>
+          <th>Id</th>
+          <th>Nom</th>          
+      </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-brand>
+      <tr>
+          <td>{{brand.id}}</td>
+          <td>{{brand.name}}</td>         
+      </tr>
+  </ng-template>
+   
+</p-table>
+
+<button
+ class="btn btn-primary"
+ >Detail
+</button>

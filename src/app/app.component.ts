@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { BrandDto } from '../api/Api';
 
 @Component({
   selector: 'app-root',
@@ -7,6 +6,7 @@ import { BrandDto } from '../api/Api';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
+  
   title = 'RentAVehicle';
 
   constructor() {

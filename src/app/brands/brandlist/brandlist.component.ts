@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { BrandClient, BrandDto } from '../../../api/Api';
+import { BrandClient, BrandDTO } from '../../../api/Api';
 
 @Component({
   selector: 'app-brandlist',
@@ -8,10 +8,11 @@ import { BrandClient, BrandDto } from '../../../api/Api';
 })
 export class BrandlistComponent implements OnInit {
 
-  brandList : BrandDto[];
+  
+  brandList : BrandDTO[];
 
   constructor(private brandClient: BrandClient) { }
-
+  
   ngOnInit() {
 
     // this.brandList = this.brandClient.getBrandList()
@@ -32,6 +33,6 @@ export class BrandlistComponent implements OnInit {
       }
     )
 
-  }
+  } 
 
 }
