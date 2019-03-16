@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { getLocaleDateTimeFormat } from '@angular/common';
+import { Input } from '@angular/core';
 
 @Component({
   selector: 'app-footer',
@@ -8,6 +9,7 @@ import { getLocaleDateTimeFormat } from '@angular/common';
 })
 export class FooterComponent implements OnInit {
 
+  @Input() footerInfo: string;
   footerYear = 2019;
 
   constructor() { }

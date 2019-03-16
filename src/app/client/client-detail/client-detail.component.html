@@ -1,3 +1,56 @@
+<h3>
+  {{ client.firstName }} {{ client.surname }}
+</h3>
 <p>
-  client-detail works!
+  Licence number : {{ client.driverLicenseNumber }}
 </p>
+<p>
+  Email : {{ client.email }}
+</p>
+<p>
+  BirthDate : {{ client.birthDate | date:'dd/MM/yyyy' }}
+</p>
+
+
+<!-- [dataSource]="client" -->
+
+<table mat-table  class="mat-elevation-z8">
+
+    <ng-container matColumnDef="surname">
+      <th mat-header-cell *matHeaderCellDef> Nom </th>
+      <td mat-cell *matCellDef="let client"> {{client.surname}}</td>      
+  </ng-container> 
+
+  <ng-container matColumnDef="firstname">
+      <th mat-header-cell *matHeaderCellDef> Prénom </th>
+      <td mat-cell *matCellDef="let client"> {{client.firstName}} </td>
+  </ng-container>  
+
+  <ng-container matColumnDef="driverLicenseNumber">
+      <th mat-header-cell *matHeaderCellDef> Numéro de permis </th>
+      <td mat-cell *matCellDef="let client"> {{client.driverLicenseNumber}} </td>
+  </ng-container>     
+
+  <ng-container matColumnDef="birthDate">
+    <th mat-header-cell *matHeaderCellDef> Date de naissance </th>
+    <td mat-cell *matCellDef="let client"> {{client.birthDate}} </td>
+  </ng-container>  
+
+  <ng-container matColumnDef="email">
+    <th mat-header-cell *matHeaderCellDef> E-mail </th>
+    <td mat-cell *matCellDef="let client"> {{client.email}} </td>
+  </ng-container> 
+  
+  
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+</table>
+  
+
+<div class="button">
+  <button mat-button [routerLink]="['../../list']" >
+    <span>Retour</span>   
+  </button> 
+</div>
+

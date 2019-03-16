@@ -9,9 +9,9 @@ import { ClientDetailComponent } from './client-detail/client-detail.component';
 const routes: Routes = [
 
   { path: 'list', component: ClientsListComponent },
-  { path: 'detail', component: ClientDetailComponent },
+  { path: 'detail/:id', component: ClientDetailComponent },
   { path: 'add', component: ClientAddComponent },
-  { path: 'update', component: ClientUpdateComponent }
+  { path: 'update/:id', component: ClientUpdateComponent }
 
 ];
 

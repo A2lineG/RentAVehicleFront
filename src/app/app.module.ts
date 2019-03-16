@@ -13,6 +13,10 @@ import { MenuComponent } from './layout/menu/menu.component';
 import { FooterComponent } from './layout/footer/footer.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { VehicleModule } from './vehicles/vehicle.module';
+import { DepotModule } from './depot/depot.module';
+import { ToastrModule } from 'ngx-toastr';
+import { ModelModule } from './model/model.module';
+import { BookingModule } from './booking/booking.module';
 
 @NgModule({
   declarations: [
@@ -31,7 +35,11 @@ import { VehicleModule } from './vehicles/vehicle.module';
     DesignModule,
     BrandsModule,
     ClientModule,
-    VehicleModule
+    VehicleModule,
+    DepotModule,    
+    ToastrModule.forRoot(),
+    ModelModule,
+    BookingModule
   ],
 
   exports: [

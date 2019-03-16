@@ -1,13 +1,11 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { DepotComponent } from './depot/depot.component';
-
+import { VehicleListComponent } from './vehicle-list/vehicle-list.component';
 
 const routes: Routes = [
 
-  { path: 'depot', component: DepotComponent }
-
+  { path: 'list', component: VehicleListComponent },  
 ];
 
 @NgModule({

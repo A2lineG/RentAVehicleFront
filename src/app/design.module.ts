@@ -34,6 +34,8 @@ import {MatTableModule} from '@angular/material/table';
 import {MatSortModule} from '@angular/material/sort';
 import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatNativeDateModule} from '@angular/material';
+import { AngularFontAwesomeModule } from 'angular-font-awesome';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [],
@@ -72,8 +74,9 @@ import {MatNativeDateModule} from '@angular/material';
     MatTableModule,
     MatSortModule,
     MatPaginatorModule, 
-    MatNativeDateModule
-
+    MatNativeDateModule,
+    AngularFontAwesomeModule,
+    ReactiveFormsModule
   ],
   exports: [
     MenubarModule,
@@ -109,7 +112,9 @@ import {MatNativeDateModule} from '@angular/material';
     MatTableModule,
     MatSortModule,
     MatPaginatorModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    AngularFontAwesomeModule,
+    ReactiveFormsModule
   ]
 })
 export class DesignModule { }

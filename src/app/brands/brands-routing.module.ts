@@ -4,7 +4,7 @@ import { BrandlistComponent } from './brandlist/brandlist.component';
 
 const routes: Routes = [
 
-  { path: 'brandlist', component: BrandlistComponent }
+  { path: 'list', component: BrandlistComponent }
 
 ];
 

@@ -15,29 +15,94 @@ export class MenuComponent implements OnInit {
   ngOnInit() {
     this.items = [      
       {
-          label: 'Véhicule',
-          routerLink: ['/brands/brandlist'],
-      },
-      
+        label: 'Véhicule',
+        items: [
+          {
+            label: 'Véhicule',            
+            items: [
+              {
+                label: 'Liste des véhicules',
+                routerLink: ['/vehicles/list']
+              },
+
+              {
+                label: 'Créer un véhicule',
+                routerLink: ['']
+              },
+            ]                         
+          }, 
+
+          {
+            label: 'Marque',            
+            items: [
+              {
+                label: 'Liste des marques',
+                routerLink: ['/brands/list']
+              },
+
+              {
+                label: 'Créer une marque',
+                routerLink: ['']
+              },
+            ]                      
+          },  
+
+          {
+            label: 'Modèle',            
+            items: [
+              {
+                label: 'Liste des modèles',
+                routerLink: ['']
+              },
+
+              {
+                label: 'Créer un modèle',
+                routerLink: ['']
+              },
+            ]                  
+          },                     
+        ],    
+      },      
       {
         label: 'Client',
         items: [{
-          label: 'Consulter la liste des clients',
-          routerLink: ['/clients/list']
-        },
+            label: 'Liste des clients',
+            routerLink: ['/clients/list']
+          },
+          {
+            label: 'Créer un client',
+            routerLink: ['/clients/add']
+          }]
+      },
+
+
+      {
+        label: 'Dépôt',
+        items: [{
+          label: 'Liste des dépôts',
+          routerLink: ['/depots/list']
+        },  
         {
-          label: 'Ajouter',
-          routerLink: ['/clients/add']
-        },
-        {
-          label: 'Modifier',
-          routerLink: ['/clients/update']
-        },        
-        ]
+          label: 'Créer un dépôt',
+          routerLink: ['']
+        }]        
       },
 
       {
         label: 'Réservation',
+        items: [{
+          label: 'Liste des réservations',
+          routerLink: ['/']
+        }]
+      },    
+      
+      {
+        label: 'Modèle',
+        items: [{
+          label: 'Liste des modèles',
+          routerLink: ['/models/list']
+        }]
+                       
       },
 
       {

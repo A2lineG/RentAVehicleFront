@@ -1,3 +1,39 @@
-<p>
-  client-update works!
-</p>
+<form [formGroup]="form" (ngSubmit)="updateClient()">
+    <div class="example-container">
+        <mat-form-field>
+            <input matInput placeholder="Nom" formControlName="firstName">
+        </mat-form-field>
+    
+        <mat-form-field>
+            <input matInput placeholder="Prénom" formControlName="surname">
+        </mat-form-field>
+
+        <mat-form-field>
+            <input matInput [matDatepicker]="picker" placeholder="Date de naissance" formControlName="birthDate">
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field>
+            <input matInput placeholder="Numéro de permis" formControlName="driverLicenseNumber">
+        </mat-form-field>        
+    
+        <mat-form-field>
+            <input matInput placeholder="Email" formControlName='email' required>
+            <mat-error *ngIf="email && email.invalid">{{getErrorMessage()}}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field>
+            <input matInput placeholder="Mot de passe" formControlName='password' [type]="hide ? 'password' : 'text'">
+            <mat-icon matSuffix (click)="hide = !hide">{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+        </mat-form-field>        
+    </div>  
+
+    <div class="button">
+    <button mat-button [routerLink]="['../../list']" >
+        <span>Retour</span>   
+    </button> 
+
+    <button mat-button type="submit">Envoyer</button>
+    </div>     
+</form>

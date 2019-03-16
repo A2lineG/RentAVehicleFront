@@ -1,0 +1,43 @@
+
+<form [formGroup]="formAddModel" (ngSubmit)="addModel()">
+  <div class="example-container">
+      <mat-form-field>
+          <input matInput placeholder="Nom" formControlName="name">
+      </mat-form-field>
+  
+      <mat-form-field>
+          <input matInput placeholder="Cylindrée" formControlName="displacement">
+      </mat-form-field>
+
+      <mat-form-field>
+        <input matInput placeholder="Poids" formControlName="weight">
+      </mat-form-field>
+
+      <mat-form-field>
+          <input matInput placeholder="Prix en euros" formControlName="price">
+      </mat-form-field>        
+  
+      <mat-form-field>
+        <input matInput placeholder="Prix au km" formControlName="increasePrice">
+      </mat-form-field> 
+
+      <mat-form-field>
+        <input matInput placeholder="Distance maximum" formControlName="distanceMax">
+      </mat-form-field>
+
+      <!-- dropdown -->
+
+      <mat-form-field>
+          <mat-select placeholder="Marque" formControlName="brand">
+            <mat-option *ngFor="let element of brandList" [value]="element">
+              {{element.name}}
+            </mat-option>
+         </mat-select>
+      </mat-form-field>   
+      
+  </div>
+
+  <div class="button"> 
+      <button mat-button type="submit">Envoyer</button>
+  </div>  
+</form>
