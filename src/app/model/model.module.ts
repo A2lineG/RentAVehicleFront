@@ -6,6 +6,7 @@ import { DesignModule } from '../design.module';
 import { ModelAddComponent } from './model-add/model-add.component';
 import { ReactiveFormsModule } from '@angular/forms';
 
+
 @NgModule({
   declarations: [
     ModelListComponent,
@@ -15,6 +16,6 @@ import { ReactiveFormsModule } from '@angular/forms';
     CommonModule,
     ModelRoutingModule,
     DesignModule
-  ]
+  ],  
 })
 export class ModelModule { }

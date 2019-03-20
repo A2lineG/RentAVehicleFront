@@ -17,12 +17,14 @@ import { DepotModule } from './depot/depot.module';
 import { ToastrModule } from 'ngx-toastr';
 import { ModelModule } from './model/model.module';
 import { BookingModule } from './booking/booking.module';
+import { MAT_DATE_LOCALE } from '@angular/material';
+import { ArraySortPipe } from './pipes/sort-pipe';
 
 @NgModule({
   declarations: [
     AppComponent,
     MenuComponent,
-    FooterComponent,    
+    FooterComponent
   ],
 
   imports: [
@@ -48,6 +50,7 @@ import { BookingModule } from './booking/booking.module';
   ],
 
   providers: [
+    {provide: MAT_DATE_LOCALE, useValue: 'fr-BE'}
   ],
 
   bootstrap: [

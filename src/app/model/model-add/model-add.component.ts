@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ModelClient, Model, ModelDTO, BrandDTO, ClientClient, BrandClient } from '../../../api/Api';
+import { ModelClient, ModelDTO, BrandDTO, ClientClient, BrandClient } from '../../../api/Api';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';

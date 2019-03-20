@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ClientClient, Client, ClientDTO } from '../../../api/Api';
+import { ClientClient, ClientDTO } from '../../../api/Api';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 

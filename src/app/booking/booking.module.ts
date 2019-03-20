@@ -5,11 +5,15 @@ import { BookinAddComponent } from './bookin-add/bookin-add.component';
 import { DesignModule } from '../design.module';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BookingRoutingModule } from './booking-routing.module';
+import { BookingDetailComponent } from './booking-detail/booking-detail.component';
+import { ArraySortPipe } from '../pipes/sort-pipe';
 
 @NgModule({
   declarations: [
     BookingListComponent,
-    BookinAddComponent
+    BookinAddComponent,
+    BookingDetailComponent,
+    ArraySortPipe
   ],
   
   imports: [

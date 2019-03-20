@@ -1030,7 +1030,7 @@ export class VehicleClient {
     /**
      * @return OK
      */
-    getVehicleDetail(id: string): Observable<VehicleDetailDTO> {
+    getVehicleDetail(id: string): Observable<VehicleDTO> {
         let url_ = this.baseUrl + "/Vehicle/Detail?";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined and cannot be null.");
@@ -1053,14 +1053,14 @@ export class VehicleClient {
                 try {
                     return this.processGetVehicleDetail(<any>response_);
                 } catch (e) {
-                    return <Observable<VehicleDetailDTO>><any>_observableThrow(e);
+                    return <Observable<VehicleDTO>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<VehicleDetailDTO>><any>_observableThrow(response_);
+                return <Observable<VehicleDTO>><any>_observableThrow(response_);
         }));
     }
 
-    protected processGetVehicleDetail(response: HttpResponseBase): Observable<VehicleDetailDTO> {
+    protected processGetVehicleDetail(response: HttpResponseBase): Observable<VehicleDTO> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 
@@ -1071,7 +1071,7 @@ export class VehicleClient {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = resultData200 ? VehicleDetailDTO.fromJS(resultData200) : new VehicleDetailDTO();
+            result200 = resultData200 ? VehicleDTO.fromJS(resultData200) : new VehicleDTO();
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -1079,7 +1079,7 @@ export class VehicleClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<VehicleDetailDTO>(<any>null);
+        return _observableOf<VehicleDTO>(<any>null);
     }
 }
 
@@ -1095,6 +1095,7 @@ export class BookingDTO implements IBookingDTO {
     ageCoefficient?: AgeCoefficientDTO | undefined;
     client?: ClientDTO | undefined;
     depot?: DepotDTO | undefined;
+    optionBookingBookings?: OptionBookingBookingDTO[] | undefined;
 
     constructor(data?: IBookingDTO) {
         if (data) {
@@ -1118,6 +1119,11 @@ export class BookingDTO implements IBookingDTO {
             this.ageCoefficient = data["AgeCoefficient"] ? AgeCoefficientDTO.fromJS(data["AgeCoefficient"]) : <any>undefined;
             this.client = data["Client"] ? ClientDTO.fromJS(data["Client"]) : <any>undefined;
             this.depot = data["Depot"] ? DepotDTO.fromJS(data["Depot"]) : <any>undefined;
+            if (data["OptionBookingBookings"] && data["OptionBookingBookings"].constructor === Array) {
+                this.optionBookingBookings = [] as any;
+                for (let item of data["OptionBookingBookings"])
+                    this.optionBookingBookings!.push(OptionBookingBookingDTO.fromJS(item));
+            }
         }
     }
 
@@ -1141,6 +1147,11 @@ export class BookingDTO implements IBookingDTO {
         data["AgeCoefficient"] = this.ageCoefficient ? this.ageCoefficient.toJSON() : <any>undefined;
         data["Client"] = this.client ? this.client.toJSON() : <any>undefined;
         data["Depot"] = this.depot ? this.depot.toJSON() : <any>undefined;
+        if (this.optionBookingBookings && this.optionBookingBookings.constructor === Array) {
+            data["OptionBookingBookings"] = [];
+            for (let item of this.optionBookingBookings)
+                data["OptionBookingBookings"].push(item.toJSON());
+        }
         return data; 
     }
 }
@@ -1157,14 +1168,15 @@ export interface IBookingDTO {
     ageCoefficient?: AgeCoefficientDTO | undefined;
     client?: ClientDTO | undefined;
     depot?: DepotDTO | undefined;
+    optionBookingBookings?: OptionBookingBookingDTO[] | undefined;
 }
 
 export class VehicleDTO implements IVehicleDTO {
     idVehicle?: string | undefined;
-    brandName?: string | undefined;
-    modelName?: string | undefined;
     opinionAverage?: number | undefined;
     optionNames?: string[] | undefined;
+    optionVehicleVehicles?: OptionVehicleVehicleDTO[] | undefined;
+    model?: ModelDTO | undefined;
 
     constructor(data?: IVehicleDTO) {
         if (data) {
@@ -1178,14 +1190,18 @@ export class VehicleDTO implements IVehicleDTO {
     init(data?: any) {
         if (data) {
             this.idVehicle = data["IdVehicle"];
-            this.brandName = data["BrandName"];
-            this.modelName = data["ModelName"];
             this.opinionAverage = data["OpinionAverage"];
             if (data["OptionNames"] && data["OptionNames"].constructor === Array) {
                 this.optionNames = [] as any;
                 for (let item of data["OptionNames"])
                     this.optionNames!.push(item);
             }
+            if (data["OptionVehicleVehicles"] && data["OptionVehicleVehicles"].constructor === Array) {
+                this.optionVehicleVehicles = [] as any;
+                for (let item of data["OptionVehicleVehicles"])
+                    this.optionVehicleVehicles!.push(OptionVehicleVehicleDTO.fromJS(item));
+            }
+            this.model = data["Model"] ? ModelDTO.fromJS(data["Model"]) : <any>undefined;
         }
     }
 
@@ -1199,24 +1215,28 @@ export class VehicleDTO implements IVehicleDTO {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["IdVehicle"] = this.idVehicle;
-        data["BrandName"] = this.brandName;
-        data["ModelName"] = this.modelName;
         data["OpinionAverage"] = this.opinionAverage;
         if (this.optionNames && this.optionNames.constructor === Array) {
             data["OptionNames"] = [];
             for (let item of this.optionNames)
                 data["OptionNames"].push(item);
         }
+        if (this.optionVehicleVehicles && this.optionVehicleVehicles.constructor === Array) {
+            data["OptionVehicleVehicles"] = [];
+            for (let item of this.optionVehicleVehicles)
+                data["OptionVehicleVehicles"].push(item.toJSON());
+        }
+        data["Model"] = this.model ? this.model.toJSON() : <any>undefined;
         return data; 
     }
 }
 
 export interface IVehicleDTO {
     idVehicle?: string | undefined;
-    brandName?: string | undefined;
-    modelName?: string | undefined;
     opinionAverage?: number | undefined;
     optionNames?: string[] | undefined;
+    optionVehicleVehicles?: OptionVehicleVehicleDTO[] | undefined;
+    model?: ModelDTO | undefined;
 }
 
 export class PeriodCoefficientDTO implements IPeriodCoefficientDTO {
@@ -1423,11 +1443,12 @@ export interface IDepotDTO {
     city?: string | undefined;
 }
 
-export class BrandDTO implements IBrandDTO {
+export class OptionBookingBookingDTO implements IOptionBookingBookingDTO {
     id?: string | undefined;
-    name?: string | undefined;
+    booking?: BookingDTO | undefined;
+    optionBooking?: OptionBookingDTO | undefined;
 
-    constructor(data?: IBrandDTO) {
+    constructor(data?: IOptionBookingBookingDTO) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -1439,13 +1460,14 @@ export class BrandDTO implements IBrandDTO {
     init(data?: any) {
         if (data) {
             this.id = data["Id"];
-            this.name = data["Name"];
+            this.booking = data["Booking"] ? BookingDTO.fromJS(data["Booking"]) : <any>undefined;
+            this.optionBooking = data["OptionBooking"] ? OptionBookingDTO.fromJS(data["OptionBooking"]) : <any>undefined;
         }
     }
 
-    static fromJS(data: any): BrandDTO {
+    static fromJS(data: any): OptionBookingBookingDTO {
         data = typeof data === 'object' ? data : {};
-        let result = new BrandDTO();
+        let result = new OptionBookingBookingDTO();
         result.init(data);
         return result;
     }
@@ -1453,14 +1475,60 @@ export class BrandDTO implements IBrandDTO {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["Id"] = this.id;
-        data["Name"] = this.name;
+        data["Booking"] = this.booking ? this.booking.toJSON() : <any>undefined;
+        data["OptionBooking"] = this.optionBooking ? this.optionBooking.toJSON() : <any>undefined;
         return data; 
     }
 }
 
-export interface IBrandDTO {
+export interface IOptionBookingBookingDTO {
     id?: string | undefined;
-    name?: string | undefined;
+    booking?: BookingDTO | undefined;
+    optionBooking?: OptionBookingDTO | undefined;
+}
+
+export class OptionVehicleVehicleDTO implements IOptionVehicleVehicleDTO {
+    id?: string | undefined;
+    vehicle?: VehicleDTO | undefined;
+    optionVehicle?: OptionVehicleDTO | undefined;
+
+    constructor(data?: IOptionVehicleVehicleDTO) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.id = data["Id"];
+            this.vehicle = data["Vehicle"] ? VehicleDTO.fromJS(data["Vehicle"]) : <any>undefined;
+            this.optionVehicle = data["OptionVehicle"] ? OptionVehicleDTO.fromJS(data["OptionVehicle"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): OptionVehicleVehicleDTO {
+        data = typeof data === 'object' ? data : {};
+        let result = new OptionVehicleVehicleDTO();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["Id"] = this.id;
+        data["Vehicle"] = this.vehicle ? this.vehicle.toJSON() : <any>undefined;
+        data["OptionVehicle"] = this.optionVehicle ? this.optionVehicle.toJSON() : <any>undefined;
+        return data; 
+    }
+}
+
+export interface IOptionVehicleVehicleDTO {
+    id?: string | undefined;
+    vehicle?: VehicleDTO | undefined;
+    optionVehicle?: OptionVehicleDTO | undefined;
 }
 
 export class ModelDTO implements IModelDTO {
@@ -1532,6 +1600,7 @@ export class OptionBookingDTO implements IOptionBookingDTO {
     name?: string | undefined;
     isFixedPrice?: boolean | undefined;
     priceValue?: number | undefined;
+    optionBookingBookings?: OptionBookingBookingDTO[] | undefined;
 
     constructor(data?: IOptionBookingDTO) {
         if (data) {
@@ -1548,6 +1617,11 @@ export class OptionBookingDTO implements IOptionBookingDTO {
             this.name = data["Name"];
             this.isFixedPrice = data["IsFixedPrice"];
             this.priceValue = data["PriceValue"];
+            if (data["OptionBookingBookings"] && data["OptionBookingBookings"].constructor === Array) {
+                this.optionBookingBookings = [] as any;
+                for (let item of data["OptionBookingBookings"])
+                    this.optionBookingBookings!.push(OptionBookingBookingDTO.fromJS(item));
+            }
         }
     }
 
@@ -1564,6 +1638,11 @@ export class OptionBookingDTO implements IOptionBookingDTO {
         data["Name"] = this.name;
         data["IsFixedPrice"] = this.isFixedPrice;
         data["PriceValue"] = this.priceValue;
+        if (this.optionBookingBookings && this.optionBookingBookings.constructor === Array) {
+            data["OptionBookingBookings"] = [];
+            for (let item of this.optionBookingBookings)
+                data["OptionBookingBookings"].push(item.toJSON());
+        }
         return data; 
     }
 }
@@ -1573,12 +1652,14 @@ export interface IOptionBookingDTO {
     name?: string | undefined;
     isFixedPrice?: boolean | undefined;
     priceValue?: number | undefined;
+    optionBookingBookings?: OptionBookingBookingDTO[] | undefined;
 }
 
 export class OptionVehicleDTO implements IOptionVehicleDTO {
     id?: string | undefined;
     name?: string | undefined;
     optionPrice?: number | undefined;
+    optionVehicleVehicles?: OptionVehicleVehicleDTO[] | undefined;
 
     constructor(data?: IOptionVehicleDTO) {
         if (data) {
@@ -1594,6 +1675,11 @@ export class OptionVehicleDTO implements IOptionVehicleDTO {
             this.id = data["Id"];
             this.name = data["Name"];
             this.optionPrice = data["OptionPrice"];
+            if (data["OptionVehicleVehicles"] && data["OptionVehicleVehicles"].constructor === Array) {
+                this.optionVehicleVehicles = [] as any;
+                for (let item of data["OptionVehicleVehicles"])
+                    this.optionVehicleVehicles!.push(OptionVehicleVehicleDTO.fromJS(item));
+            }
         }
     }
 
@@ -1609,6 +1695,11 @@ export class OptionVehicleDTO implements IOptionVehicleDTO {
         data["Id"] = this.id;
         data["Name"] = this.name;
         data["OptionPrice"] = this.optionPrice;
+        if (this.optionVehicleVehicles && this.optionVehicleVehicles.constructor === Array) {
+            data["OptionVehicleVehicles"] = [];
+            for (let item of this.optionVehicleVehicles)
+                data["OptionVehicleVehicles"].push(item.toJSON());
+        }
         return data; 
     }
 }
@@ -1617,157 +1708,14 @@ export interface IOptionVehicleDTO {
     id?: string | undefined;
     name?: string | undefined;
     optionPrice?: number | undefined;
+    optionVehicleVehicles?: OptionVehicleVehicleDTO[] | undefined;
 }
 
-export class VehicleDetailDTO implements IVehicleDetailDTO {
-    idVehicleDetail?: string | undefined;
-    vehicle?: Vehicle | undefined;
-    model?: Model | undefined;
-    brand?: Brand | undefined;
-
-    constructor(data?: IVehicleDetailDTO) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(data?: any) {
-        if (data) {
-            this.idVehicleDetail = data["IdVehicleDetail"];
-            this.vehicle = data["Vehicle"] ? Vehicle.fromJS(data["Vehicle"]) : <any>undefined;
-            this.model = data["Model"] ? Model.fromJS(data["Model"]) : <any>undefined;
-            this.brand = data["Brand"] ? Brand.fromJS(data["Brand"]) : <any>undefined;
-        }
-    }
-
-    static fromJS(data: any): VehicleDetailDTO {
-        data = typeof data === 'object' ? data : {};
-        let result = new VehicleDetailDTO();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["IdVehicleDetail"] = this.idVehicleDetail;
-        data["Vehicle"] = this.vehicle ? this.vehicle.toJSON() : <any>undefined;
-        data["Model"] = this.model ? this.model.toJSON() : <any>undefined;
-        data["Brand"] = this.brand ? this.brand.toJSON() : <any>undefined;
-        return data; 
-    }
-}
-
-export interface IVehicleDetailDTO {
-    idVehicleDetail?: string | undefined;
-    vehicle?: Vehicle | undefined;
-    model?: Model | undefined;
-    brand?: Brand | undefined;
-}
-
-export class Vehicle implements IVehicle {
-    id?: string | undefined;
-    year?: number | undefined;
-    mileage?: number | undefined;
-    modelId?: string | undefined;
-    model?: Model | undefined;
-    bookings?: Booking[] | undefined;
-    opinions?: Opinion[] | undefined;
-    optionsVehicles?: OptionVehicleVehicle[] | undefined;
-
-    constructor(data?: IVehicle) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(data?: any) {
-        if (data) {
-            this.id = data["Id"];
-            this.year = data["Year"];
-            this.mileage = data["Mileage"];
-            this.modelId = data["ModelId"];
-            this.model = data["Model"] ? Model.fromJS(data["Model"]) : <any>undefined;
-            if (data["Bookings"] && data["Bookings"].constructor === Array) {
-                this.bookings = [] as any;
-                for (let item of data["Bookings"])
-                    this.bookings!.push(Booking.fromJS(item));
-            }
-            if (data["Opinions"] && data["Opinions"].constructor === Array) {
-                this.opinions = [] as any;
-                for (let item of data["Opinions"])
-                    this.opinions!.push(Opinion.fromJS(item));
-            }
-            if (data["OptionsVehicles"] && data["OptionsVehicles"].constructor === Array) {
-                this.optionsVehicles = [] as any;
-                for (let item of data["OptionsVehicles"])
-                    this.optionsVehicles!.push(OptionVehicleVehicle.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): Vehicle {
-        data = typeof data === 'object' ? data : {};
-        let result = new Vehicle();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["Id"] = this.id;
-        data["Year"] = this.year;
-        data["Mileage"] = this.mileage;
-        data["ModelId"] = this.modelId;
-        data["Model"] = this.model ? this.model.toJSON() : <any>undefined;
-        if (this.bookings && this.bookings.constructor === Array) {
-            data["Bookings"] = [];
-            for (let item of this.bookings)
-                data["Bookings"].push(item.toJSON());
-        }
-        if (this.opinions && this.opinions.constructor === Array) {
-            data["Opinions"] = [];
-            for (let item of this.opinions)
-                data["Opinions"].push(item.toJSON());
-        }
-        if (this.optionsVehicles && this.optionsVehicles.constructor === Array) {
-            data["OptionsVehicles"] = [];
-            for (let item of this.optionsVehicles)
-                data["OptionsVehicles"].push(item.toJSON());
-        }
-        return data; 
-    }
-}
-
-export interface IVehicle {
-    id?: string | undefined;
-    year?: number | undefined;
-    mileage?: number | undefined;
-    modelId?: string | undefined;
-    model?: Model | undefined;
-    bookings?: Booking[] | undefined;
-    opinions?: Opinion[] | undefined;
-    optionsVehicles?: OptionVehicleVehicle[] | undefined;
-}
-
-export class Model implements IModel {
+export class BrandDTO implements IBrandDTO {
     id?: string | undefined;
     name?: string | undefined;
-    displacement?: number | undefined;
-    weight?: number | undefined;
-    price?: number | undefined;
-    increasePrice?: number | undefined;
-    distanceMax?: number | undefined;
-    brandId?: string | undefined;
-    brand?: Brand | undefined;
-    vehicles?: Vehicle[] | undefined;
 
-    constructor(data?: IModel) {
+    constructor(data?: IBrandDTO) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -1780,24 +1728,12 @@ export class Model implements IModel {
         if (data) {
             this.id = data["Id"];
             this.name = data["Name"];
-            this.displacement = data["Displacement"];
-            this.weight = data["Weight"];
-            this.price = data["Price"];
-            this.increasePrice = data["IncreasePrice"];
-            this.distanceMax = data["DistanceMax"];
-            this.brandId = data["BrandId"];
-            this.brand = data["Brand"] ? Brand.fromJS(data["Brand"]) : <any>undefined;
-            if (data["Vehicles"] && data["Vehicles"].constructor === Array) {
-                this.vehicles = [] as any;
-                for (let item of data["Vehicles"])
-                    this.vehicles!.push(Vehicle.fromJS(item));
-            }
         }
     }
 
-    static fromJS(data: any): Model {
+    static fromJS(data: any): BrandDTO {
         data = typeof data === 'object' ? data : {};
-        let result = new Model();
+        let result = new BrandDTO();
         result.init(data);
         return result;
     }
@@ -1806,577 +1742,13 @@ export class Model implements IModel {
         data = typeof data === 'object' ? data : {};
         data["Id"] = this.id;
         data["Name"] = this.name;
-        data["Displacement"] = this.displacement;
-        data["Weight"] = this.weight;
-        data["Price"] = this.price;
-        data["IncreasePrice"] = this.increasePrice;
-        data["DistanceMax"] = this.distanceMax;
-        data["BrandId"] = this.brandId;
-        data["Brand"] = this.brand ? this.brand.toJSON() : <any>undefined;
-        if (this.vehicles && this.vehicles.constructor === Array) {
-            data["Vehicles"] = [];
-            for (let item of this.vehicles)
-                data["Vehicles"].push(item.toJSON());
-        }
         return data; 
     }
 }
 
-export interface IModel {
+export interface IBrandDTO {
     id?: string | undefined;
     name?: string | undefined;
-    displacement?: number | undefined;
-    weight?: number | undefined;
-    price?: number | undefined;
-    increasePrice?: number | undefined;
-    distanceMax?: number | undefined;
-    brandId?: string | undefined;
-    brand?: Brand | undefined;
-    vehicles?: Vehicle[] | undefined;
-}
-
-export class Brand implements IBrand {
-    id?: string | undefined;
-    name?: string | undefined;
-    models?: Model[] | undefined;
-
-    constructor(data?: IBrand) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(data?: any) {
-        if (data) {
-            this.id = data["Id"];
-            this.name = data["Name"];
-            if (data["Models"] && data["Models"].constructor === Array) {
-                this.models = [] as any;
-                for (let item of data["Models"])
-                    this.models!.push(Model.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): Brand {
-        data = typeof data === 'object' ? data : {};
-        let result = new Brand();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["Id"] = this.id;
-        data["Name"] = this.name;
-        if (this.models && this.models.constructor === Array) {
-            data["Models"] = [];
-            for (let item of this.models)
-                data["Models"].push(item.toJSON());
-        }
-        return data; 
-    }
-}
-
-export interface IBrand {
-    id?: string | undefined;
-    name?: string | undefined;
-    models?: Model[] | undefined;
-}
-
-export class Booking implements IBooking {
-    id?: string | undefined;
-    number?: number | undefined;
-    startDate?: Date | undefined;
-    endDate?: Date | undefined;
-    totalPrice?: number | undefined;
-    status?: boolean | undefined;
-    vehicleId?: string | undefined;
-    vehicle?: Vehicle | undefined;
-    periodCoefficientId?: string | undefined;
-    periodCoefficient?: PeriodCoefficient | undefined;
-    ageCoefficientId?: string | undefined;
-    ageCoefficient?: AgeCoefficient | undefined;
-    clientId?: string | undefined;
-    client?: Client | undefined;
-    depotId?: string | undefined;
-    depot?: Depot | undefined;
-
-    constructor(data?: IBooking) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(data?: any) {
-        if (data) {
-            this.id = data["Id"];
-            this.number = data["Number"];
-            this.startDate = data["StartDate"] ? new Date(data["StartDate"].toString()) : <any>undefined;
-            this.endDate = data["EndDate"] ? new Date(data["EndDate"].toString()) : <any>undefined;
-            this.totalPrice = data["TotalPrice"];
-            this.status = data["Status"];
-            this.vehicleId = data["VehicleId"];
-            this.vehicle = data["Vehicle"] ? Vehicle.fromJS(data["Vehicle"]) : <any>undefined;
-            this.periodCoefficientId = data["PeriodCoefficientId"];
-            this.periodCoefficient = data["PeriodCoefficient"] ? PeriodCoefficient.fromJS(data["PeriodCoefficient"]) : <any>undefined;
-            this.ageCoefficientId = data["AgeCoefficientId"];
-            this.ageCoefficient = data["AgeCoefficient"] ? AgeCoefficient.fromJS(data["AgeCoefficient"]) : <any>undefined;
-            this.clientId = data["ClientId"];
-            this.client = data["Client"] ? Client.fromJS(data["Client"]) : <any>undefined;
-            this.depotId = data["DepotId"];
-            this.depot = data["Depot"] ? Depot.fromJS(data["Depot"]) : <any>undefined;
-        }
-    }
-
-    static fromJS(data: any): Booking {
-        data = typeof data === 'object' ? data : {};
-        let result = new Booking();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["Id"] = this.id;
-        data["Number"] = this.number;
-        data["StartDate"] = this.startDate ? this.startDate.toISOString() : <any>undefined;
-        data["EndDate"] = this.endDate ? this.endDate.toISOString() : <any>undefined;
-        data["TotalPrice"] = this.totalPrice;
-        data["Status"] = this.status;
-        data["VehicleId"] = this.vehicleId;
-        data["Vehicle"] = this.vehicle ? this.vehicle.toJSON() : <any>undefined;
-        data["PeriodCoefficientId"] = this.periodCoefficientId;
-        data["PeriodCoefficient"] = this.periodCoefficient ? this.periodCoefficient.toJSON() : <any>undefined;
-        data["AgeCoefficientId"] = this.ageCoefficientId;
-        data["AgeCoefficient"] = this.ageCoefficient ? this.ageCoefficient.toJSON() : <any>undefined;
-        data["ClientId"] = this.clientId;
-        data["Client"] = this.client ? this.client.toJSON() : <any>undefined;
-        data["DepotId"] = this.depotId;
-        data["Depot"] = this.depot ? this.depot.toJSON() : <any>undefined;
-        return data; 
-    }
-}
-
-export interface IBooking {
-    id?: string | undefined;
-    number?: number | undefined;
-    startDate?: Date | undefined;
-    endDate?: Date | undefined;
-    totalPrice?: number | undefined;
-    status?: boolean | undefined;
-    vehicleId?: string | undefined;
-    vehicle?: Vehicle | undefined;
-    periodCoefficientId?: string | undefined;
-    periodCoefficient?: PeriodCoefficient | undefined;
-    ageCoefficientId?: string | undefined;
-    ageCoefficient?: AgeCoefficient | undefined;
-    clientId?: string | undefined;
-    client?: Client | undefined;
-    depotId?: string | undefined;
-    depot?: Depot | undefined;
-}
-
-export class Opinion implements IOpinion {
-    id?: string | undefined;
-    comment?: string | undefined;
-    rating?: number | undefined;
-    clientId?: string | undefined;
-    client?: Client | undefined;
-    vehicleId?: string | undefined;
-    vehicle?: Vehicle | undefined;
-
-    constructor(data?: IOpinion) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(data?: any) {
-        if (data) {
-            this.id = data["Id"];
-            this.comment = data["Comment"];
-            this.rating = data["Rating"];
-            this.clientId = data["ClientId"];
-            this.client = data["Client"] ? Client.fromJS(data["Client"]) : <any>undefined;
-            this.vehicleId = data["VehicleId"];
-            this.vehicle = data["Vehicle"] ? Vehicle.fromJS(data["Vehicle"]) : <any>undefined;
-        }
-    }
-
-    static fromJS(data: any): Opinion {
-        data = typeof data === 'object' ? data : {};
-        let result = new Opinion();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["Id"] = this.id;
-        data["Comment"] = this.comment;
-        data["Rating"] = this.rating;
-        data["ClientId"] = this.clientId;
-        data["Client"] = this.client ? this.client.toJSON() : <any>undefined;
-        data["VehicleId"] = this.vehicleId;
-        data["Vehicle"] = this.vehicle ? this.vehicle.toJSON() : <any>undefined;
-        return data; 
-    }
-}
-
-export interface IOpinion {
-    id?: string | undefined;
-    comment?: string | undefined;
-    rating?: number | undefined;
-    clientId?: string | undefined;
-    client?: Client | undefined;
-    vehicleId?: string | undefined;
-    vehicle?: Vehicle | undefined;
-}
-
-export class OptionVehicleVehicle implements IOptionVehicleVehicle {
-    id?: string | undefined;
-    vehicleId?: string | undefined;
-    vehicle?: Vehicle | undefined;
-    optionVehicleId?: string | undefined;
-    optionVehicle?: OptionVehicle | undefined;
-
-    constructor(data?: IOptionVehicleVehicle) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(data?: any) {
-        if (data) {
-            this.id = data["Id"];
-            this.vehicleId = data["VehicleId"];
-            this.vehicle = data["Vehicle"] ? Vehicle.fromJS(data["Vehicle"]) : <any>undefined;
-            this.optionVehicleId = data["OptionVehicleId"];
-            this.optionVehicle = data["OptionVehicle"] ? OptionVehicle.fromJS(data["OptionVehicle"]) : <any>undefined;
-        }
-    }
-
-    static fromJS(data: any): OptionVehicleVehicle {
-        data = typeof data === 'object' ? data : {};
-        let result = new OptionVehicleVehicle();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["Id"] = this.id;
-        data["VehicleId"] = this.vehicleId;
-        data["Vehicle"] = this.vehicle ? this.vehicle.toJSON() : <any>undefined;
-        data["OptionVehicleId"] = this.optionVehicleId;
-        data["OptionVehicle"] = this.optionVehicle ? this.optionVehicle.toJSON() : <any>undefined;
-        return data; 
-    }
-}
-
-export interface IOptionVehicleVehicle {
-    id?: string | undefined;
-    vehicleId?: string | undefined;
-    vehicle?: Vehicle | undefined;
-    optionVehicleId?: string | undefined;
-    optionVehicle?: OptionVehicle | undefined;
-}
-
-export class PeriodCoefficient implements IPeriodCoefficient {
-    id?: string | undefined;
-    startDate?: Date | undefined;
-    endDate?: Date | undefined;
-    percentage?: number | undefined;
-
-    constructor(data?: IPeriodCoefficient) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(data?: any) {
-        if (data) {
-            this.id = data["Id"];
-            this.startDate = data["StartDate"] ? new Date(data["StartDate"].toString()) : <any>undefined;
-            this.endDate = data["EndDate"] ? new Date(data["EndDate"].toString()) : <any>undefined;
-            this.percentage = data["Percentage"];
-        }
-    }
-
-    static fromJS(data: any): PeriodCoefficient {
-        data = typeof data === 'object' ? data : {};
-        let result = new PeriodCoefficient();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["Id"] = this.id;
-        data["StartDate"] = this.startDate ? this.startDate.toISOString() : <any>undefined;
-        data["EndDate"] = this.endDate ? this.endDate.toISOString() : <any>undefined;
-        data["Percentage"] = this.percentage;
-        return data; 
-    }
-}
-
-export interface IPeriodCoefficient {
-    id?: string | undefined;
-    startDate?: Date | undefined;
-    endDate?: Date | undefined;
-    percentage?: number | undefined;
-}
-
-export class AgeCoefficient implements IAgeCoefficient {
-    id?: string | undefined;
-    startAge?: number | undefined;
-    endAge?: number | undefined;
-    percentage?: number | undefined;
-
-    constructor(data?: IAgeCoefficient) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(data?: any) {
-        if (data) {
-            this.id = data["Id"];
-            this.startAge = data["StartAge"];
-            this.endAge = data["EndAge"];
-            this.percentage = data["Percentage"];
-        }
-    }
-
-    static fromJS(data: any): AgeCoefficient {
-        data = typeof data === 'object' ? data : {};
-        let result = new AgeCoefficient();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["Id"] = this.id;
-        data["StartAge"] = this.startAge;
-        data["EndAge"] = this.endAge;
-        data["Percentage"] = this.percentage;
-        return data; 
-    }
-}
-
-export interface IAgeCoefficient {
-    id?: string | undefined;
-    startAge?: number | undefined;
-    endAge?: number | undefined;
-    percentage?: number | undefined;
-}
-
-export class Client implements IClient {
-    id?: string | undefined;
-    surname?: string | undefined;
-    firstName?: string | undefined;
-    driverLicenseNumber?: string | undefined;
-    birthDate?: Date | undefined;
-    email?: string | undefined;
-    password?: string | undefined;
-    opinions?: Opinion[] | undefined;
-    bookings?: Booking[] | undefined;
-
-    constructor(data?: IClient) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(data?: any) {
-        if (data) {
-            this.id = data["Id"];
-            this.surname = data["Surname"];
-            this.firstName = data["FirstName"];
-            this.driverLicenseNumber = data["DriverLicenseNumber"];
-            this.birthDate = data["BirthDate"] ? new Date(data["BirthDate"].toString()) : <any>undefined;
-            this.email = data["Email"];
-            this.password = data["Password"];
-            if (data["Opinions"] && data["Opinions"].constructor === Array) {
-                this.opinions = [] as any;
-                for (let item of data["Opinions"])
-                    this.opinions!.push(Opinion.fromJS(item));
-            }
-            if (data["Bookings"] && data["Bookings"].constructor === Array) {
-                this.bookings = [] as any;
-                for (let item of data["Bookings"])
-                    this.bookings!.push(Booking.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): Client {
-        data = typeof data === 'object' ? data : {};
-        let result = new Client();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["Id"] = this.id;
-        data["Surname"] = this.surname;
-        data["FirstName"] = this.firstName;
-        data["DriverLicenseNumber"] = this.driverLicenseNumber;
-        data["BirthDate"] = this.birthDate ? this.birthDate.toISOString() : <any>undefined;
-        data["Email"] = this.email;
-        data["Password"] = this.password;
-        if (this.opinions && this.opinions.constructor === Array) {
-            data["Opinions"] = [];
-            for (let item of this.opinions)
-                data["Opinions"].push(item.toJSON());
-        }
-        if (this.bookings && this.bookings.constructor === Array) {
-            data["Bookings"] = [];
-            for (let item of this.bookings)
-                data["Bookings"].push(item.toJSON());
-        }
-        return data; 
-    }
-}
-
-export interface IClient {
-    id?: string | undefined;
-    surname?: string | undefined;
-    firstName?: string | undefined;
-    driverLicenseNumber?: string | undefined;
-    birthDate?: Date | undefined;
-    email?: string | undefined;
-    password?: string | undefined;
-    opinions?: Opinion[] | undefined;
-    bookings?: Booking[] | undefined;
-}
-
-export class Depot implements IDepot {
-    id?: string | undefined;
-    name?: string | undefined;
-    address?: string | undefined;
-    city?: string | undefined;
-    bookings?: Booking[] | undefined;
-
-    constructor(data?: IDepot) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(data?: any) {
-        if (data) {
-            this.id = data["Id"];
-            this.name = data["Name"];
-            this.address = data["Address"];
-            this.city = data["City"];
-            if (data["Bookings"] && data["Bookings"].constructor === Array) {
-                this.bookings = [] as any;
-                for (let item of data["Bookings"])
-                    this.bookings!.push(Booking.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): Depot {
-        data = typeof data === 'object' ? data : {};
-        let result = new Depot();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["Id"] = this.id;
-        data["Name"] = this.name;
-        data["Address"] = this.address;
-        data["City"] = this.city;
-        if (this.bookings && this.bookings.constructor === Array) {
-            data["Bookings"] = [];
-            for (let item of this.bookings)
-                data["Bookings"].push(item.toJSON());
-        }
-        return data; 
-    }
-}
-
-export interface IDepot {
-    id?: string | undefined;
-    name?: string | undefined;
-    address?: string | undefined;
-    city?: string | undefined;
-    bookings?: Booking[] | undefined;
-}
-
-export class OptionVehicle implements IOptionVehicle {
-    id?: string | undefined;
-    name?: string | undefined;
-    optionPrice?: number | undefined;
-
-    constructor(data?: IOptionVehicle) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(data?: any) {
-        if (data) {
-            this.id = data["Id"];
-            this.name = data["Name"];
-            this.optionPrice = data["OptionPrice"];
-        }
-    }
-
-    static fromJS(data: any): OptionVehicle {
-        data = typeof data === 'object' ? data : {};
-        let result = new OptionVehicle();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["Id"] = this.id;
-        data["Name"] = this.name;
-        data["OptionPrice"] = this.optionPrice;
-        return data; 
-    }
-}
-
-export interface IOptionVehicle {
-    id?: string | undefined;
-    name?: string | undefined;
-    optionPrice?: number | undefined;
 }
 
 export class SwaggerException extends Error {

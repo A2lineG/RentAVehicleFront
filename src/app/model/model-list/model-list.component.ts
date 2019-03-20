@@ -12,7 +12,6 @@ import { MatTableDataSource } from '@angular/material';
 export class ModelListComponent implements OnInit {
   
   displayedColumns: string[] = ['name', 'displacement', 'price', 'brand'];
-
   modelList: Array<ModelDTO> = new Array<ModelDTO>();
 
   constructor(

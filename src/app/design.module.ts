@@ -36,6 +36,7 @@ import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatNativeDateModule} from '@angular/material';
 import { AngularFontAwesomeModule } from 'angular-font-awesome';
 import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [],
@@ -76,7 +77,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     MatPaginatorModule, 
     MatNativeDateModule,
     AngularFontAwesomeModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    FormsModule
   ],
   exports: [
     MenubarModule,
@@ -114,7 +116,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     MatPaginatorModule,
     MatNativeDateModule,
     AngularFontAwesomeModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    FormsModule
   ]
 })
 export class DesignModule { }
