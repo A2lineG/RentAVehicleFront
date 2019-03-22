@@ -6,6 +6,7 @@ import { VehicleModule } from './vehicles/vehicle.module';
 import { DepotModule } from './depot/depot.module'; 
 import { ModelModule } from './model/model.module';
 import { BookingModule } from './booking/booking.module';
+import { ContactFormComponent } from './layout/contact-form/contact-form.component';
 
 const routes: Routes = [
   { path: 'brands', loadChildren: () => BrandsModule },
@@ -14,6 +15,7 @@ const routes: Routes = [
   { path: 'depots', loadChildren: () => DepotModule },
   { path: 'models', loadChildren: () => ModelModule },
   { path: 'bookings', loadChildren: () => BookingModule },
+  { path: 'contacts', component: ContactFormComponent },
 
 ];
 

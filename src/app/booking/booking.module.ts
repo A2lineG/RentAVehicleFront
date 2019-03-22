@@ -7,13 +7,15 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { BookingRoutingModule } from './booking-routing.module';
 import { BookingDetailComponent } from './booking-detail/booking-detail.component';
 import { ArraySortPipe } from '../pipes/sort-pipe';
+import { VehicleRowComponent } from './vehicle-row/vehicle-row.component';
 
 @NgModule({
   declarations: [
     BookingListComponent,
     BookinAddComponent,
     BookingDetailComponent,
-    ArraySortPipe
+    ArraySortPipe,
+    VehicleRowComponent
   ],
   
   imports: [

@@ -19,12 +19,15 @@ import { ModelModule } from './model/model.module';
 import { BookingModule } from './booking/booking.module';
 import { MAT_DATE_LOCALE } from '@angular/material';
 import { ArraySortPipe } from './pipes/sort-pipe';
+import { ContactFormComponent } from './layout/contact-form/contact-form.component';
+import { GMapModule } from 'primeng/gmap';
 
 @NgModule({
   declarations: [
     AppComponent,
     MenuComponent,
-    FooterComponent
+    FooterComponent,    
+    ContactFormComponent
   ],
 
   imports: [
@@ -41,7 +44,8 @@ import { ArraySortPipe } from './pipes/sort-pipe';
     DepotModule,    
     ToastrModule.forRoot(),
     ModelModule,
-    BookingModule
+    BookingModule,
+    GMapModule
   ],
 
   exports: [

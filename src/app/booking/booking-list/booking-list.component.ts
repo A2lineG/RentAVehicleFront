@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
 export class BookingListComponent implements OnInit {
 
   bookingList: Array<BookingDTO> = new Array<BookingDTO>();
-  displayedColumns: string[] = ['number', 'startDate', 'endDate', 'totalPrice'];
+  displayedColumns: string[] = ['number', 'startDate', 'endDate', 'vehicle', 'totalPrice'];
 
   constructor(
     private BookingService: BookingClient,

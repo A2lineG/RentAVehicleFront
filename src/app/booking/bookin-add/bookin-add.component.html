@@ -17,7 +17,7 @@
           <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
           <mat-datepicker #picker2></mat-datepicker>
         </mat-form-field>
-      </div>    
+      </div>
       <div class="">
         <mat-form-field *ngIf="depotList"> 
           <mat-label>Dépôt</mat-label>
@@ -27,10 +27,10 @@
               </mat-option>
             </mat-select>
         </mat-form-field>        
-      </div>        
+      </div>
       <div>
           <button mat-button (click)="stepper.reset()">Reset</button>
-          <button mat-button matStepperNext [disabled]="!formAddDate.valid">Suivant</button>        
+          <button mat-button matStepperNext (click)="getVehicleAvailable()" [disabled]="!formAddDate.valid">Suivant</button>        
       </div>         
       <label *ngIf="formAddDate.touched && formAddDate.errors">{{ formAddDate.errors?.dates | json }}</label>      
     </form>
@@ -39,16 +39,11 @@
 <!-- vehicles -->
 <mat-step [stepControl]="formAddVehicle" [completed]="bookingDtoToSend.vehicle">
   <ng-template matStepLabel>Sélectionner un modèle</ng-template>
-  <br>
+  <br>   
   <mat-list-item *ngFor="let vehicle of vehicleList">
     <br>
     <a class="cardList" matLine (click)="selectVehicle(vehicle, stepper)">
-      <mat-card class="example-card">
-        <mat-card-header>
-          <mat-card-title> {{ vehicle.model.name }} </mat-card-title>   
-          <mat-card-subtitle> {{vehicle.model.brand.name}} </mat-card-subtitle>   
-        </mat-card-header>
-      </mat-card>
+      <app-vehicle-row [vehicle]="vehicle"></app-vehicle-row>
     </a>
  </mat-list-item>
 
@@ -59,23 +54,16 @@
   <br>
   <mat-card>
     <mat-selection-list #optionBooking>        
+      <h3>Options réservation</h3>
         <mat-list-option *ngFor="let option of optionBookingList" [value]="option">
-          {{option.name}}
+          {{option.name}} - {{option.priceString}}
         </mat-list-option>
     </mat-selection-list>
   </mat-card>
   <br>
-  <mat-card>
-      <mat-selection-list #optionVehicle>        
-          <mat-list-option *ngFor="let option of optionVehicleList" [value]="option">
-            {{option.name}}
-          </mat-list-option>
-      </mat-selection-list>
-  </mat-card> 
-  <br>
     <div>
       <button mat-button matStepperPrevious>Retour</button>         
-      <button mat-button (click)="validate(optionBooking.selectedOptions.selected, optionVehicle.selectedOptions.selected)">Valider</button>
+      <button mat-button (click)="validate(optionBooking.selectedOptions.selected)">Valider</button>
     </div>    
   </mat-step>  
 </mat-horizontal-stepper>
@@ -83,10 +71,15 @@
 <div class="col-sm-3">
     <mat-card class="example-card">
         <mat-card-header>                
-          <mat-card-title>Ma réservation</mat-card-title>                
+          <mat-card-title>Réservation en cours</mat-card-title>                
         </mat-card-header>              
         <mat-card-content>
+          <p *ngIf="formAddDate.value['startDate']"> Date de départ: {{formAddDate.value['startDate'] | date: 'dd/MM/yyyy' }}</p>
+          <p *ngIf="formAddDate.value['endDate']"> Date d'arrivée: {{formAddDate.value['endDate'] | date: 'dd/MM/yyyy'}}</p>
           <p *ngIf="formAddDate.value['depot']">Dépot : {{formAddDate.value['depot'].city}}</p>
+          <p *ngIf="bookingDtoToSend.vehicle"> Marquee: {{bookingDtoToSend.vehicle.model.brand.name}}</p>
+          <p *ngIf="bookingDtoToSend.vehicle">Modèle: {{bookingDtoToSend.vehicle.model.name}} </p>  
+          <h5 *ngIf="bookingDtoToSend.vehicle">Total : {{ getTotalPrice() }}€</h5>
         </mat-card-content>              
       </mat-card>
 </div>

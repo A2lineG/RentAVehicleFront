@@ -92,7 +92,11 @@ export class MenuComponent implements OnInit {
         label: 'Réservation',
         items: [{
           label: 'Liste des réservations',
-          routerLink: ['/']
+          routerLink: ['/bookings/list']
+        },
+        {
+          label: 'Nouvelle réservation',
+          routerLink: ['/bookings/add']
         }]
       },    
       
@@ -106,7 +110,8 @@ export class MenuComponent implements OnInit {
       },
 
       {
-        label: 'Contact',               
+        label: 'Contact',  
+        routerLink: ['/contacts']             
       },
      
       {

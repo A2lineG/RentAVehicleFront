@@ -37,6 +37,7 @@ import {MatNativeDateModule} from '@angular/material';
 import { AngularFontAwesomeModule } from 'angular-font-awesome';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
+import {GMapModule} from 'primeng/gmap';
 
 @NgModule({
   declarations: [],

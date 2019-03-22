@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { DepotDTO, BookingClient, VehicleDTO, OptionBookingDTO, OptionVehicleDTO, BookingDTO, DepotClient, VehicleClient, OptionBookingClient, OptionVehicleClient, OptionBookingBookingDTO, OptionVehicleVehicleDTO } from '../../../api/Api';
+import { DepotDTO, BookingClient, VehicleDTO, OptionBookingDTO, OptionVehicleDTO, BookingDTO, DepotClient, VehicleClient, OptionBookingClient, OptionBookingBookingDTO, OptionVehicleVehicleDTO } from '../../../api/Api';
 import { Router } from '@angular/router';
 import { FormBuilder } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
@@ -22,16 +22,14 @@ export class BookinAddComponent implements OnInit {
   isLinear = true;
   formAddDate: FormGroup;
   vehicleList: Array<VehicleDTO>;   
-  optionBookingList: Array<OptionBookingDTO>; 
-  optionVehicleList: Array<OptionVehicleDTO>;
+  optionBookingList: Array<OptionBookingDTO>;
   depotList: Array<DepotDTO>;
    
 
   constructor(
     private bookingService: BookingClient,
     private vehicleService: VehicleClient,   
-    private optionBookingService: OptionBookingClient, 
-    private optionVehicleService: OptionVehicleClient,
+    private optionBookingService: OptionBookingClient,
     private depotService: DepotClient,
     private formBuilder: FormBuilder,
     private router: Router,
@@ -47,12 +45,6 @@ export class BookinAddComponent implements OnInit {
     },
      {validator: this.checkDates('startDate', 'endDate')});    
     
-    this.vehicleService.getVehicleList().subscribe(
-      value => {
-        this.vehicleList = value.sort();
-      }
-    ) 
-    
     this.depotService.getDepotList().subscribe(
       value => {
         this.depotList = value.sort((a,b) => a.name.localeCompare(b.name) );
@@ -64,11 +56,32 @@ export class BookinAddComponent implements OnInit {
         this.optionBookingList = value;        
       }
     )
+  }
 
-    this.optionVehicleService.getOptionVehicleList().subscribe(
+  getTotalPrice() {
+    if(!this.bookingDtoToSend.vehicle) return 0;
+
+    var totalPrice = this.bookingDtoToSend.vehicle.model.price;
+
+    if(!this.bookingDtoToSend.optionBookingBookings) return totalPrice;
+
+    this.bookingDtoToSend.optionBookingBookings.forEach(booking => {
+      if(booking.optionBooking.isFixedPrice) {
+        totalPrice += booking.optionBooking.priceValue;
+      } else {
+        totalPrice += booking.optionBooking.priceValue * this.bookingDtoToSend.vehicle.model.price;
+      }
+    });
+
+    return totalPrice;
+  }
+
+  getVehicleAvailable() {
+    this.vehicleService.getVehicleListByDate(this.formAddDate.value['startDate'], this.formAddDate.value['endDate']).subscribe(
       value => {
-        this.optionVehicleList = value;
-      });
+        this.vehicleList = value.sort();
+      }
+    ) 
   }
 
   //*******************************************************************************
@@ -78,10 +91,9 @@ export class BookinAddComponent implements OnInit {
     stepper.next();
   } 
 
-  validate(optionBookingList, optionVehiculeList) {
+  validate(optionBookingList) {
     this.selectOptionBooking(optionBookingList.map(x => x.value));
-    this.selectOptionVehicle(optionVehiculeList.map(x => x.value));
-
+    
     this.addBooking();
   }
 
@@ -96,17 +108,6 @@ export class BookinAddComponent implements OnInit {
     });
   }
 
-  selectOptionVehicle(optionList: Array<OptionVehicleDTO>){
-    this.bookingDtoToSend.vehicle.optionVehicleVehicles = new Array<OptionVehicleVehicleDTO>();
-
-    optionList.forEach(element => {
-      var optionVehicleVehicle = new OptionVehicleVehicleDTO();
-      optionVehicleVehicle.optionVehicle = element;
-
-      this.bookingDtoToSend.vehicle.optionVehicleVehicles.push(optionVehicleVehicle);
-    });
-  }
-  
   //PUSH*******************************************************************************
   public addBooking(){
 
@@ -116,15 +117,17 @@ export class BookinAddComponent implements OnInit {
     
     this.bookingService.addBooking(this.bookingDtoToSend).subscribe(
       success => {
-
+        this.toastr.success("La réservation a bien été enregistrée", ":D !");
+        this.router.navigate(['/bookings/list']);
       },
       error => {
-
+        console.log(error);
+        this.toastr.error(error.message, ":/ !");
       } 
     );
   }
 
-  // Custom validations
+  // ***************************************************************************************
   checkDates(from: string, to: string) {
     return (group: FormGroup): {[key: string]: any} => {
       let f = group.controls[from];

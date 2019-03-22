@@ -1030,6 +1030,69 @@ export class VehicleClient {
     /**
      * @return OK
      */
+    getVehicleListByDate(startDate: Date, endDate: Date): Observable<VehicleDTO[]> {
+        let url_ = this.baseUrl + "/Vehicle/ByDate?";
+        if (startDate === undefined || startDate === null)
+            throw new Error("The parameter 'startDate' must be defined and cannot be null.");
+        else
+            url_ += "startDate=" + encodeURIComponent(startDate ? "" + startDate.toJSON() : "") + "&"; 
+        if (endDate === undefined || endDate === null)
+            throw new Error("The parameter 'endDate' must be defined and cannot be null.");
+        else
+            url_ += "endDate=" + encodeURIComponent(endDate ? "" + endDate.toJSON() : "") + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetVehicleListByDate(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetVehicleListByDate(<any>response_);
+                } catch (e) {
+                    return <Observable<VehicleDTO[]>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<VehicleDTO[]>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetVehicleListByDate(response: HttpResponseBase): Observable<VehicleDTO[]> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (resultData200 && resultData200.constructor === Array) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(VehicleDTO.fromJS(item));
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<VehicleDTO[]>(<any>null);
+    }
+
+    /**
+     * @return OK
+     */
     getVehicleDetail(id: string): Observable<VehicleDTO> {
         let url_ = this.baseUrl + "/Vehicle/Detail?";
         if (id === undefined || id === null)
@@ -1172,7 +1235,7 @@ export interface IBookingDTO {
 }
 
 export class VehicleDTO implements IVehicleDTO {
-    idVehicle?: string | undefined;
+    id?: string | undefined;
     opinionAverage?: number | undefined;
     optionNames?: string[] | undefined;
     optionVehicleVehicles?: OptionVehicleVehicleDTO[] | undefined;
@@ -1189,7 +1252,7 @@ export class VehicleDTO implements IVehicleDTO {
 
     init(data?: any) {
         if (data) {
-            this.idVehicle = data["IdVehicle"];
+            this.id = data["Id"];
             this.opinionAverage = data["OpinionAverage"];
             if (data["OptionNames"] && data["OptionNames"].constructor === Array) {
                 this.optionNames = [] as any;
@@ -1214,7 +1277,7 @@ export class VehicleDTO implements IVehicleDTO {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["IdVehicle"] = this.idVehicle;
+        data["Id"] = this.id;
         data["OpinionAverage"] = this.opinionAverage;
         if (this.optionNames && this.optionNames.constructor === Array) {
             data["OptionNames"] = [];
@@ -1232,7 +1295,7 @@ export class VehicleDTO implements IVehicleDTO {
 }
 
 export interface IVehicleDTO {
-    idVehicle?: string | undefined;
+    id?: string | undefined;
     opinionAverage?: number | undefined;
     optionNames?: string[] | undefined;
     optionVehicleVehicles?: OptionVehicleVehicleDTO[] | undefined;
@@ -1600,6 +1663,7 @@ export class OptionBookingDTO implements IOptionBookingDTO {
     name?: string | undefined;
     isFixedPrice?: boolean | undefined;
     priceValue?: number | undefined;
+    priceString?: string | undefined;
     optionBookingBookings?: OptionBookingBookingDTO[] | undefined;
 
     constructor(data?: IOptionBookingDTO) {
@@ -1617,6 +1681,7 @@ export class OptionBookingDTO implements IOptionBookingDTO {
             this.name = data["Name"];
             this.isFixedPrice = data["IsFixedPrice"];
             this.priceValue = data["PriceValue"];
+            this.priceString = data["PriceString"];
             if (data["OptionBookingBookings"] && data["OptionBookingBookings"].constructor === Array) {
                 this.optionBookingBookings = [] as any;
                 for (let item of data["OptionBookingBookings"])
@@ -1638,6 +1703,7 @@ export class OptionBookingDTO implements IOptionBookingDTO {
         data["Name"] = this.name;
         data["IsFixedPrice"] = this.isFixedPrice;
         data["PriceValue"] = this.priceValue;
+        data["PriceString"] = this.priceString;
         if (this.optionBookingBookings && this.optionBookingBookings.constructor === Array) {
             data["OptionBookingBookings"] = [];
             for (let item of this.optionBookingBookings)
@@ -1652,13 +1718,13 @@ export interface IOptionBookingDTO {
     name?: string | undefined;
     isFixedPrice?: boolean | undefined;
     priceValue?: number | undefined;
+    priceString?: string | undefined;
     optionBookingBookings?: OptionBookingBookingDTO[] | undefined;
 }
 
 export class OptionVehicleDTO implements IOptionVehicleDTO {
     id?: string | undefined;
     name?: string | undefined;
-    optionPrice?: number | undefined;
     optionVehicleVehicles?: OptionVehicleVehicleDTO[] | undefined;
 
     constructor(data?: IOptionVehicleDTO) {
@@ -1674,7 +1740,6 @@ export class OptionVehicleDTO implements IOptionVehicleDTO {
         if (data) {
             this.id = data["Id"];
             this.name = data["Name"];
-            this.optionPrice = data["OptionPrice"];
             if (data["OptionVehicleVehicles"] && data["OptionVehicleVehicles"].constructor === Array) {
                 this.optionVehicleVehicles = [] as any;
                 for (let item of data["OptionVehicleVehicles"])
@@ -1694,7 +1759,6 @@ export class OptionVehicleDTO implements IOptionVehicleDTO {
         data = typeof data === 'object' ? data : {};
         data["Id"] = this.id;
         data["Name"] = this.name;
-        data["OptionPrice"] = this.optionPrice;
         if (this.optionVehicleVehicles && this.optionVehicleVehicles.constructor === Array) {
             data["OptionVehicleVehicles"] = [];
             for (let item of this.optionVehicleVehicles)
@@ -1707,7 +1771,6 @@ export class OptionVehicleDTO implements IOptionVehicleDTO {
 export interface IOptionVehicleDTO {
     id?: string | undefined;
     name?: string | undefined;
-    optionPrice?: number | undefined;
     optionVehicleVehicles?: OptionVehicleVehicleDTO[] | undefined;
 }
 
